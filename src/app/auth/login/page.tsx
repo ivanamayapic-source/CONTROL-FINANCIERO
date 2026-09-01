@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 import { Wallet } from "lucide-react";
 
 export default function LoginPage() {
@@ -9,7 +10,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("En la Fase 2 esto iniciará sesión con NextAuth.");
+    signIn("credentials", { email, password, callbackUrl: "/" });
   };
 
   return (

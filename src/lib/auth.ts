@@ -16,16 +16,22 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        // TODO: In Phase 1 we mock the DB since we don't have Postgres running locally yet.
-        // Replace with: const user = await prisma.user.findUnique({ where: { email: credentials.email } })
-        
-        // Mock user for testing Layout
-        const user = {
-          id: "1",
-          name: "Usuario de Prueba",
-          email: credentials.email,
-          passwordHash: await bcrypt.hash(credentials.password, 10),
-        };
+        let user = await prisma.user.findUnique({
+          where: { email: credentials.email }
+        });
+
+        if (!user) {
+          // MODO PRUEBA: Si el usuario no existe, lo creamos automáticamente
+          const passwordHash = await bcrypt.hash(credentials.password, 10);
+          user = await prisma.user.create({
+            data: {
+              name: "Usuario Demo",
+              email: credentials.email,
+              passwordHash,
+            }
+          });
+          return { id: user.id, name: user.name, email: user.email };
+        }
 
         const isPasswordValid = await bcrypt.compare(credentials.password, user.passwordHash);
 
