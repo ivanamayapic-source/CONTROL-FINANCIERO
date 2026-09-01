@@ -24,14 +24,17 @@ export default function RootLayout({
               <h1 className="text-xl font-bold text-blue-600">Mi Control</h1>
             </div>
             <nav className="mt-6">
-              <a href="#" className="flex items-center px-6 py-3 text-gray-700 bg-blue-50 border-r-4 border-blue-600">
+              <a href="/" className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50">
                 Dashboard
               </a>
-              <a href="#" className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
-                Movimientos
-              </a>
-              <a href="#" className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+              <a href="/cuentas" className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
                 Cuentas
+              </a>
+              <a href="/categorias" className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                Categorías
+              </a>
+              <a href="/movimientos/nuevo" className="flex items-center justify-center px-6 py-3 mt-4 mx-4 text-white bg-blue-600 rounded hover:bg-blue-700 font-semibold shadow-sm">
+                + Registrar
               </a>
             </nav>
           </aside>
