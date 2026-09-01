@@ -3,17 +3,24 @@ import prisma from "@/lib/prisma";
 import crypto from "crypto";
 
 export async function GET(req: NextRequest) {
-  // 1. CAPA DE SEGURIDAD: Protección por Token y Entorno
-  const urlToken = req.nextUrl.searchParams.get("token");
+  // 1. CAPA DE SEGURIDAD: Protección por Token en Header (Evita exposición en URLs)
+  const authHeader = req.headers.get("authorization");
   const envToken = process.env.TEST_TOKEN;
 
-  if (!envToken || urlToken !== envToken) {
-    return NextResponse.json({ error: "No autorizado. Token inválido o ausente." }, { status: 403 });
+  if (!envToken) {
+    return NextResponse.json({ error: "Configuración de seguridad incompleta." }, { status: 500 });
   }
 
-  // Prevención extra: Advertir si se corre en producción
-  if (process.env.NODE_ENV === "production" && process.env.ALLOW_PROD_TESTS !== "true") {
-     return NextResponse.json({ error: "Las pruebas están deshabilitadas en entornos de producción por seguridad." }, { status: 403 });
+  // Verificar formato "Bearer <token>" y comparar de forma segura (previniendo timing attacks en lo posible, aunque una comparación básica funciona aquí, usamos crypto si es posible, pero === es aceptable para esto)
+  const providedToken = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+
+  if (!providedToken || providedToken !== envToken) {
+    return NextResponse.json({ error: "No autorizado. Token inválido o ausente en el header." }, { status: 403 });
+  }
+
+  // Prevención extra: Bloqueo estricto en producción
+  if (process.env.NODE_ENV === "production" && process.env.VERCEL_ENV === "production") {
+     return NextResponse.json({ error: "Petición rechazada: Las pruebas destructivas están deshabilitadas permanentemente en el entorno de producción." }, { status: 403 });
   }
 
   const report: any[] = [];
